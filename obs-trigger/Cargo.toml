@@ -1,0 +1,33 @@
+[package]
+name = "obs-trigger"
+version = "0.1.0"
+edition = "2021"
+license.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.86"
+async-trait = "0.1.81"
+axum = "0.7.5"
+lapin = "2.5.0"
+obs-client = { version = "0.1.0", path = "../obs-client" }
+prost = "0.13.1"
+prost-types = "0.13.1"
+reqwest = { version = "0.12.5", features = ["json"] }
+rustls = { version = "0.23.12", features = ["aws-lc-rs"] }
+serde = { version = "1.0.205", features = ["derive"] }
+serde_yaml = "0.9.34"
+tokio = { version = "1.39.2", features = ["macros", "rt"] }
+tokio-executor-trait = "2.1.1"
+tokio-reactor-trait = "1.1.0"
+tokio-stream = "0.1.15"
+tonic = { version = "0.12.1", default-features = false, features = ["channel", "codegen", "prost", "tls", "tls-roots"] }
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+url = { version = "2.5.2", features = ["serde"] }
+yaserde = { version = "0.10.1", features = ["yaserde_derive"] }
+
+[build-dependencies]
+prost-build = "0.13.1"
+tonic-build = "0.12.1"

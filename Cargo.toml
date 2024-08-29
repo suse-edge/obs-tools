@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "obs-trigger",
+    "obs-client",
+]
+
+[workspace.package]
+license = "Apache-2.0"
+
