@@ -10,6 +10,9 @@ use super::package::Package;
 use super::xml::buildresult::{ResultList, Summary};
 use super::xml::obs::{BuildArch, PackageCode, RepositoryCode};
 
+pub use super::xml::project::{Project as ProjectMeta, ProjectKind};
+pub use super::xml::repository::ReleaseTrigger;
+
 #[derive(Debug, thiserror::Error)]
 #[error("Wrong ResultList kind provided")]
 pub struct ResultError {}
@@ -54,6 +57,22 @@ impl Binary {
 pub struct Repository {
     name: String,
     project: Project,
+}
+
+impl Repository {
+    pub fn from_name_project(name: &str, project: &Project) -> Self {
+        Self {
+            name: name.to_string(),
+            project: project.clone(),
+        }
+    }
+    pub fn project(&self) -> &Project {
+        &self.project
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
 }
 
 #[derive(Debug)]
@@ -196,7 +215,7 @@ impl std::fmt::Display for ProjectSummary {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Project {
-    client: Arc<OBSClient>,
+    pub(crate) client: Arc<OBSClient>,
     name: String,
 }
 
@@ -215,7 +234,7 @@ impl Project {
     pub async fn release(&self) -> Result<(), APIError> {
         let req = self
             .client
-            .post(&["project", &self.name])
+            .post(&["source", &self.name])
             .query(&[("cmd", "release")])
             .build()?;
         self.client.execute(req).await?;
@@ -246,5 +265,11 @@ impl Project {
             yaserde::de::from_str(&resp.text().await?).map_err(APIError::XMLParseError)?,
         )
         .unwrap())
+    }
+
+    pub async fn meta(&self) -> Result<ProjectMeta, APIError> {
+        let req = self.client.get(&["source", &self.name, "_meta"]).build()?;
+        let resp = self.client.execute(req).await?;
+        yaserde::de::from_str(&resp.text().await?).map_err(APIError::XMLParseError)
     }
 }

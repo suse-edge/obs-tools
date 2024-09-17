@@ -103,9 +103,10 @@ impl OBSClient {
                             .filter(|s| !s.is_empty())
                             .find_map(|s| Some(s.strip_prefix("realm=")?.trim_matches('"')))
                         {
-                            req_bak
-                                .headers_mut()
-                                .insert(AUTHORIZATION, self.authenticator.authenticate(realm));
+                            req_bak.headers_mut().insert(
+                                AUTHORIZATION,
+                                self.authenticator.authenticate(realm).await,
+                            );
                             return self.http_client.execute(req_bak).await?.error_for_status();
                         }
                     }

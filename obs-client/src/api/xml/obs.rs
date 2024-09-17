@@ -214,3 +214,59 @@ fn to_snake_case(s: &str) -> String {
     }
     snake
 }
+
+#[derive(Debug, Clone, yaserde::YaDeserialize)]
+pub struct SimpleFlag {
+    pub enable: Option<String>,
+    pub disable: Option<String>,
+}
+
+#[derive(Debug, Clone, yaserde::YaDeserialize)]
+pub struct Flag {
+    pub enable: Vec<FlagSwitch>,
+    pub disable: Vec<FlagSwitch>,
+}
+
+#[derive(Debug, Clone, yaserde::YaDeserialize)]
+pub struct FlagSwitch {
+    #[yaserde(attribute)]
+    pub repository: Option<String>,
+    #[yaserde(attribute)]
+    pub arch: Option<BuildArch>,
+}
+
+#[derive(Debug, Clone, yaserde::YaDeserialize)]
+pub struct Group {
+    #[yaserde(attribute)]
+    pub groupid: String,
+    #[yaserde(attribute)]
+    pub role: LocalRole,
+}
+
+#[derive(Debug, Clone, yaserde::YaDeserialize)]
+pub struct Person {
+    #[yaserde(attribute)]
+    pub userid: String,
+    #[yaserde(attribute)]
+    pub role: LocalRole,
+}
+
+#[derive(Debug, Clone, yaserde::YaDeserialize)]
+pub enum LocalRole {
+    #[yaserde(rename = "maintainer")]
+    Maintainer,
+    #[yaserde(rename = "bugowner")]
+    Bugowner,
+    #[yaserde(rename = "reviewer")]
+    Reviewer,
+    #[yaserde(rename = "downloader")]
+    Downloader,
+    #[yaserde(rename = "reader")]
+    Reader,
+}
+
+impl Default for LocalRole {
+    fn default() -> Self {
+        Self::Reader
+    }
+}

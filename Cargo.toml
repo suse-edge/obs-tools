@@ -4,8 +4,8 @@ resolver = "2"
 members = [
     "obs-trigger",
     "obs-client",
+    "obs-smart-release",
 ]
 
 [workspace.package]
 license = "Apache-2.0"
-

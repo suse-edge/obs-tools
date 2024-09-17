@@ -17,7 +17,7 @@ pub async fn new_client(uri: Url, creds: ObsCredentials) -> anyhow::Result<Arc<O
     let authenticator: Arc<dyn obs_client::authentication::AuthMethod> = match creds {
         ObsCredentials::Plain { login, password } => Arc::new(BasicAuth {
             username: login,
-            password,
+            password: Box::new(password),
         }),
         ObsCredentials::Secret(path) => {
             let login_path: PathBuf = [&path, "username"].iter().collect();
@@ -27,7 +27,7 @@ pub async fn new_client(uri: Url, creds: ObsCredentials) -> anyhow::Result<Arc<O
             if sshkey_path.is_file() {
                 Arc::new(obs_client::authentication::SSHAuth::new(
                     &login,
-                    &sshkey_path,
+                    sshkey_path.to_str().unwrap(),
                 )?)
             } else {
                 let password_path: PathBuf = [&path, "password"].iter().collect();
@@ -35,7 +35,7 @@ pub async fn new_client(uri: Url, creds: ObsCredentials) -> anyhow::Result<Arc<O
                 std::fs::File::open(&password_path)?.read_to_string(&mut password)?;
                 Arc::new(BasicAuth {
                     username: login,
-                    password,
+                    password: Box::new(password),
                 })
             }
         }

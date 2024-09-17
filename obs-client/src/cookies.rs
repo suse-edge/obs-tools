@@ -8,6 +8,8 @@ use reqwest_cookie_store::CookieStoreRwLock;
 use time::OffsetDateTime;
 use url::Url;
 
+use crate::files::Oscrc;
+
 fn parse_line(line: String) -> Option<CookieResult<'static>> {
     let line = match line.strip_prefix("Set-Cookie3: ") {
         Some(v) => v,
@@ -83,17 +85,13 @@ pub(crate) fn parse_lwp_cookiejar(
     CookieStore::from_cookies(lines.map_while(Result::ok).filter_map(parse_line), false)
 }
 
-pub fn get_osc_cookiejar() -> Result<Arc<CookieStoreRwLock>, cookie_store::CookieError> {
-    if let Ok(xdg_paths) = xdg::BaseDirectories::with_prefix("osc") {
-        if let Some(path) = xdg_paths.find_state_file("cookiejar") {
-            if let Ok(cookiejar_file) = std::fs::File::open(path) {
-                let cookie_jar_reader = BufReader::new(cookiejar_file);
-                let cookie_jar = parse_lwp_cookiejar(cookie_jar_reader)?;
-                return Ok(Arc::new(reqwest_cookie_store::CookieStoreRwLock::new(
-                    cookie_jar,
-                )));
-            }
-        }
+pub fn get_osc_cookiejar(cfg: &Oscrc) -> Result<Arc<CookieStoreRwLock>, cookie_store::CookieError> {
+    if let Ok(cookiejar_file) = std::fs::File::open(&cfg.cookiejar) {
+        let cookie_jar_reader = BufReader::new(cookiejar_file);
+        let cookie_jar = parse_lwp_cookiejar(cookie_jar_reader)?;
+        return Ok(Arc::new(reqwest_cookie_store::CookieStoreRwLock::new(
+            cookie_jar,
+        )));
     }
 
     let cookie_jar = CookieStore::new(None);

@@ -5,14 +5,22 @@ edition = "2021"
 license.workspace = true
 
 [dependencies]
+async-trait = "0.1.82"
 base64 = "0.22.1"
+configparser = "3.1.0"
 cookie_store = "0.21.0"
+dialoguer = "0.11.0"
+expanduser = "1.2.2"
 reqwest = { version = "0.12.7", features = ["json"] }
 reqwest_cookie_store = "0.8.0"
-ssh-key = "0.6.6"
+serde = { version = "1.0.209", features = ["derive"] }
+ssh-encoding = { version = "0.2.0", features = ["pem"] }
+ssh-key = { version = "0.6.6", features = ["crypto", "dsa", "encryption", "tdes"] }
 thiserror = "1.0.63"
-time = "0.3.36"
+time = { version = "0.3.36", features = ["serde"] }
 tokio = { version = "1.39.3", features = ["sync"] }
-url = "2.5.2"
+tracing = "0.1.40"
+url = { version = "2.5.2", features = ["serde"] }
 xdg = "2.5.2"
 yaserde = { version = "0.10.1", features = ["yaserde_derive"] }
+zbus = { version = "4.4.0", features = ["tokio"] }
