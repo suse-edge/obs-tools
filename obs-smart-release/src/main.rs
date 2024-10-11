@@ -174,20 +174,29 @@ async fn main() {
                     release_for_repo.push((repo.clone(), &target.dest_repository));
                     continue;
                 }
-                let src_bins_info = get_bins_info(&bins).await;
-                let src_tags: HashSet<String> =
-                    src_bins_info.iter().flat_map(|b| b.tags.clone()).collect();
-                let mut to_check = Vec::default();
 
-                // Fetch binaries info and check for identical package already released
-                for (pak, rep) in binlist_release_project[target.dest_repository.project()]
+                let already_released = binlist_release_project[target.dest_repository.project()]
                     .binaries
                     .iter()
                     .filter(|(p, _)| {
                         let (base_name, _) = p.name().rsplit_once('.').unwrap_or(("", ""));
                         base_name == package.name()
                     })
-                {
+                    .collect_vec();
+
+                // If there are no instances of the package already released, then just release it
+                if already_released.is_empty() {
+                    release_for_repo.push((repo.clone(), &target.dest_repository));
+                    continue;
+                }
+
+                let src_bins_info = get_bins_info(&bins).await;
+                let src_tags: HashSet<String> =
+                    src_bins_info.iter().flat_map(|b| b.tags.clone()).collect();
+                let mut to_check = Vec::default();
+
+                // Fetch binaries info and check for identical package already released
+                for (pak, rep) in already_released {
                     let dst_bins = &rep[&target.dest_repository];
                     let dst_bins_info = get_bins_info(dst_bins).await;
                     if src_bins_info == dst_bins_info {
