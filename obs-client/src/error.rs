@@ -8,4 +8,6 @@ pub enum APIError {
     HTTPError(#[from] reqwest::Error),
     #[error("Unable to parse CookieJar file")]
     CookieError(#[from] cookie_store::CookieError),
+    #[error("Invalid object given")]
+    InvalidObject,
 }

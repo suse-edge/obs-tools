@@ -1,21 +1,35 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use itertools::Itertools;
 use time::OffsetDateTime;
 
 use crate::client::OBSClient;
 use crate::error::APIError;
 
 use super::package::Package;
+use super::xml::buildepinfo::BuildDepInfo;
 use super::xml::buildresult::{ResultList, Summary};
 use super::xml::obs::{BuildArch, PackageCode, RepositoryCode};
 
+use super::xml::project::SourceInfoList;
 pub use super::xml::project::{Project as ProjectMeta, ProjectKind};
 pub use super::xml::repository::ReleaseTrigger;
 
 #[derive(Debug, thiserror::Error)]
 #[error("Wrong ResultList kind provided")]
 pub struct ResultError {}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct PackageInfo {
+    pub package: Package,
+    pub rev: u32,
+    pub vrev: u32,
+    pub srcmd5: String,
+    pub verifymd5: String,
+    pub version: Option<String>,
+    pub subpackages: Vec<String>,
+}
 
 #[derive(Debug)]
 pub struct Binary {
@@ -72,6 +86,46 @@ impl Repository {
 
     pub fn name(&self) -> &str {
         &self.name
+    }
+
+    pub async fn deps_tree(
+        &self,
+        arch: BuildArch,
+    ) -> Result<HashMap<Arc<Package>, Vec<Arc<Package>>>, APIError> {
+        let req = self
+            .project
+            .client
+            .get(&["build", &self.project.name, &self.name, &arch.to_string()])
+            .build()?;
+        let resp = self.project.client.execute(req).await?;
+        let deps: BuildDepInfo =
+            yaserde::de::from_str(&resp.text().await?).map_err(APIError::XMLParseError)?;
+        #[allow(clippy::mutable_key_type)]
+        let mut packages: HashMap<Arc<Package>, Vec<Arc<Package>>> = deps
+            .package
+            .iter()
+            .map(|p| {
+                (
+                    Arc::new(Package::from_name(p.name.clone(), self.project.clone())),
+                    vec![],
+                )
+            })
+            .collect();
+        for dep in deps.package {
+            let deps = dep
+                .pkgdep
+                .into_iter()
+                .map(|d| packages.keys().find(|p| p.name() == d).unwrap().clone())
+                .collect_vec();
+            if let std::collections::hash_map::Entry::Occupied(mut entry) =
+                packages.entry(Arc::new(Package::from_name(dep.name, self.project.clone())))
+            {
+                entry.insert(deps);
+            } else {
+                return Err(APIError::InvalidObject);
+            }
+        }
+        Ok(packages)
     }
 }
 
@@ -265,6 +319,31 @@ impl Project {
             yaserde::de::from_str(&resp.text().await?).map_err(APIError::XMLParseError)?,
         )
         .unwrap())
+    }
+
+    pub async fn packagelist(&self, full: bool) -> Result<Vec<PackageInfo>, APIError> {
+        let req = self.client.get(&["source", &self.name]);
+        let req = match full {
+            true => req.query(&[("view", "info"), ("parse", "1")]),
+            false => req.query(&[("view", "info"), ("nofilename", "1")]),
+        }
+        .build()?;
+        let resp = self.client.execute(req).await?;
+        let list: SourceInfoList =
+            yaserde::de::from_str(&resp.text().await?).map_err(APIError::XMLParseError)?;
+        Ok(list
+            .sourceinfo
+            .iter()
+            .map(|s| PackageInfo {
+                package: Package::from_name(s.package.clone(), self.clone()),
+                rev: s.rev,
+                vrev: s.vrev,
+                srcmd5: s.srcmd5.clone(),
+                verifymd5: s.verifymd5.clone().unwrap_or_default(),
+                version: s.version.clone(),
+                subpackages: s.subpacks.clone(),
+            })
+            .collect())
     }
 
     pub async fn meta(&self) -> Result<ProjectMeta, APIError> {

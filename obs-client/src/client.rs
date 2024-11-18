@@ -66,6 +66,10 @@ impl OBSClient {
         })
     }
 
+    pub fn user(&self) -> &str {
+        self.authenticator.username()
+    }
+
     pub(crate) fn get(&self, route: &[&str]) -> RequestBuilder {
         let mut url = self.api_url.clone();
         url.path_segments_mut().expect("Base url").extend(route);
@@ -76,6 +80,12 @@ impl OBSClient {
         let mut url = self.api_url.clone();
         url.path_segments_mut().expect("Base url").extend(route);
         self.http_client.post(url)
+    }
+
+    pub(crate) fn delete(&self, route: &[&str]) -> RequestBuilder {
+        let mut url = self.api_url.clone();
+        url.path_segments_mut().expect("Base url").extend(route);
+        self.http_client.delete(url)
     }
 
     pub(crate) async fn execute(

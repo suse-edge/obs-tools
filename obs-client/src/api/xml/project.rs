@@ -92,3 +92,46 @@ impl Default for VrevMode {
         Self::Standard
     }
 }
+
+#[derive(Debug, Clone, YaDeserialize)]
+pub struct SourceInfoList {
+    pub sourceinfo: Vec<SourceInfo>,
+}
+
+#[derive(Debug, Clone, YaDeserialize)]
+#[allow(dead_code)]
+pub struct SourceInfo {
+    #[yaserde(attribute)]
+    pub package: String,
+    #[yaserde(attribute)]
+    pub rev: u32,
+    #[yaserde(attribute)]
+    pub vrev: u32,
+    #[yaserde(attribute)]
+    pub srcmd5: String,
+    #[yaserde(attribute)]
+    pub verifymd5: Option<String>,
+    #[yaserde(attribute)]
+    pub metamd5: Option<String>,
+
+    pub filename: Option<String>,
+    pub originproject: Option<String>,
+    pub linked: Vec<PackageLink>,
+    pub name: Option<String>,
+    pub version: Option<String>,
+    pub release: Option<String>,
+    pub revtime: Option<String>,
+    pub error: Option<String>,
+    pub subpacks: Vec<String>,
+    pub deps: Vec<String>,
+    pub prereqs: Vec<String>,
+}
+
+#[derive(Debug, Clone, YaDeserialize)]
+#[allow(dead_code)]
+pub struct PackageLink {
+    #[yaserde(attribute)]
+    pub project: String,
+    #[yaserde(attribute)]
+    pub package: String,
+}

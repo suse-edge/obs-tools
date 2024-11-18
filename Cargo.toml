@@ -4,7 +4,7 @@ resolver = "2"
 members = [
     "obs-trigger",
     "obs-client",
-    "obs-smart-release",
+    "obs-smart-release", "obs-smart-request",
 ]
 
 [workspace.package]

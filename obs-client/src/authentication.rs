@@ -14,6 +14,7 @@ use std::time::SystemTime;
 #[async_trait::async_trait]
 pub trait AuthMethod: Debug + Sync + Send {
     fn method_name(&self) -> &str;
+    fn username(&self) -> &str;
     async fn authenticate(&self, realm: &str) -> HeaderValue;
 }
 
@@ -62,6 +63,10 @@ impl AuthMethod for BasicAuth {
     async fn authenticate(&self, _realm: &str) -> HeaderValue {
         basic_auth(&self.username, Some(self.password.pass().await))
     }
+
+    fn username(&self) -> &str {
+        &self.username
+    }
 }
 
 /// Taken verbatim from reqwest::util
@@ -93,6 +98,10 @@ pub struct SSHAuth {
 impl AuthMethod for SSHAuth {
     fn method_name(&self) -> &str {
         "Signature"
+    }
+
+    fn username(&self) -> &str {
+        &self.username
     }
 
     async fn authenticate(&self, realm: &str) -> HeaderValue {

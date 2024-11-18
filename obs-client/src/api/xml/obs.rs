@@ -90,7 +90,7 @@ impl From<&str> for RepositoryCode {
 #[derive(Debug, Clone, yaserde::YaDeserialize, PartialEq, Eq, Hash)]
 pub enum BuildArch {
     #[yaserde(rename = "noarch")]
-    NoArch,
+    Noarch,
 
     #[yaserde(rename = "aarch64")]
     Aarch64,
@@ -193,7 +193,7 @@ pub enum BuildArch {
 
 impl Default for BuildArch {
     fn default() -> Self {
-        Self::NoArch
+        Self::Noarch
     }
 }
 
