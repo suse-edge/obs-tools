@@ -334,6 +334,7 @@ impl Project {
         Ok(list
             .sourceinfo
             .iter()
+            .filter(|s| s.originpackage.is_none())
             .map(|s| PackageInfo {
                 package: Package::from_name(s.package.clone(), self.clone()),
                 rev: s.rev,

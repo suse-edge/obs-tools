@@ -103,7 +103,7 @@ pub struct SourceInfoList {
 pub struct SourceInfo {
     #[yaserde(attribute)]
     pub package: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute, default)]
     pub rev: u32,
     #[yaserde(attribute)]
     pub vrev: u32,
@@ -116,6 +116,7 @@ pub struct SourceInfo {
 
     pub filename: Option<String>,
     pub originproject: Option<String>,
+    pub originpackage: Option<String>,
     pub linked: Vec<PackageLink>,
     pub name: Option<String>,
     pub version: Option<String>,
