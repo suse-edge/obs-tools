@@ -229,25 +229,25 @@ pub struct Flag {
 
 #[derive(Debug, Clone, yaserde::YaDeserialize)]
 pub struct FlagSwitch {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub repository: Option<String>,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub arch: Option<BuildArch>,
 }
 
 #[derive(Debug, Clone, yaserde::YaDeserialize)]
 pub struct Group {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub groupid: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub role: LocalRole,
 }
 
 #[derive(Debug, Clone, yaserde::YaDeserialize)]
 pub struct Person {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub userid: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub role: LocalRole,
 }
 

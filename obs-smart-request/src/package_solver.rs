@@ -138,13 +138,14 @@ impl DepsSolver {
                     }
                     None
                 })
-                .clone() {
-                    Some(p) => p,
-                    None => {
-                        warn!(?dep, "Unable to find source for dep");
-                        continue;
-                    }
-                };
+                .clone()
+            {
+                Some(p) => p,
+                None => {
+                    warn!(?dep, "Unable to find source for dep");
+                    continue;
+                }
+            };
             drop(guard);
 
             result.insert(self.get_packageinfo(&source).await);

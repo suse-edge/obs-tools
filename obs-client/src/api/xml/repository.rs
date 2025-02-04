@@ -4,13 +4,13 @@ use super::obs::BuildArch;
 
 #[derive(Debug, Clone, YaDeserialize)]
 pub struct Repository {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub name: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub rebuild: Option<RebuildMode>,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub block: Option<BlockMode>,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub linkedbuild: Option<LinkedBuildMode>,
     pub download: Vec<Download>,
     pub releasetarget: Vec<ReleaseTarget>,
@@ -71,19 +71,19 @@ impl Default for LinkedBuildMode {
 
 #[derive(Debug, Clone, YaDeserialize)]
 pub struct Path {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub project: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub repository: String,
 }
 
 #[derive(Debug, Clone, YaDeserialize)]
 pub struct ReleaseTarget {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub project: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub repository: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub trigger: ReleaseTrigger,
 }
 
@@ -106,11 +106,11 @@ impl Default for ReleaseTrigger {
 
 #[derive(Debug, Clone, YaDeserialize)]
 pub struct Download {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub arch: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub url: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub repotype: RepoType,
     pub archfilter: Option<String>,
     pub master: Option<Master>,

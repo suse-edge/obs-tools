@@ -124,7 +124,8 @@ async fn main() {
 
     #[allow(clippy::mutable_key_type)]
     let mut binlist_release_project: HashMap<Project, BinaryList> = Default::default();
-    let mut full_release_projects: Vec<Project> = Default::default();
+    #[allow(clippy::mutable_key_type)]
+    let mut full_release_projects: HashSet<Project> = Default::default();
 
     for project in release_targets
         .iter()
@@ -141,9 +142,11 @@ async fn main() {
             let binlist = project.binarylist().await.unwrap();
             binlist_release_project.insert(project, binlist);
         } else {
-            full_release_projects.push(project);
+            full_release_projects.insert(project);
         }
     }
+
+    let src_prjconf = project.prjconf().await.unwrap();
 
     // Simple case, just release the project
     if binlist_release_project.is_empty() {
@@ -154,6 +157,22 @@ async fn main() {
         {
             info!("Releasing {}", project.name());
             project.release().await.unwrap();
+            for prj in full_release_projects.iter() {
+                if prj.prjconf().await.unwrap() != src_prjconf
+                    && Confirm::with_theme(&theme)
+                        .with_prompt(format!(
+                            "Sync project config from {} to {} ?",
+                            project.name(),
+                            prj.name()
+                        ))
+                        .interact()
+                        .unwrap()
+                {
+                    prj.set_prjconf(&src_prjconf, &format!("Sync from {}", project.name()))
+                        .await
+                        .unwrap();
+                }
+            }
         } else {
             info!("Doing nothing !");
         }

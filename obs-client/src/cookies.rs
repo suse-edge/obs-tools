@@ -11,10 +11,7 @@ use url::Url;
 use crate::files::Oscrc;
 
 fn parse_line(line: String) -> Option<CookieResult<'static>> {
-    let line = match line.strip_prefix("Set-Cookie3: ") {
-        Some(v) => v,
-        None => return None,
-    };
+    let line = line.strip_prefix("Set-Cookie3: ")?;
     Some(parse_cookie(line))
 }
 

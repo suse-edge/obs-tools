@@ -352,4 +352,24 @@ impl Project {
         let resp = self.client.execute(req).await?;
         yaserde::de::from_str(&resp.text().await?).map_err(APIError::XMLParseError)
     }
+
+    pub async fn prjconf(&self) -> Result<String, APIError> {
+        let req = self
+            .client
+            .get(&["source", &self.name, "_config"])
+            .build()?;
+        let resp = self.client.execute(req).await?;
+        resp.text().await.map_err(APIError::HTTPError)
+    }
+
+    pub async fn set_prjconf(&self, prjconf: &str, comment: &str) -> Result<(), APIError> {
+        let req = self
+            .client
+            .put(&["source", &self.name, "_config"])
+            .body(prjconf.to_string())
+            .query(&[("comment", comment)])
+            .build()?;
+        self.client.execute(req).await?;
+        Ok(())
+    }
 }

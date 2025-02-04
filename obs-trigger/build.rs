@@ -5,6 +5,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .build_server(false)
         .build_client(true)
         .out_dir("./src")
-        .compile_with_config(config, &["proto/gangway.proto"], &["proto"])?;
+        .compile_protos_with_config(config, &["proto/gangway.proto"], &["proto"])?;
     Ok(())
 }
