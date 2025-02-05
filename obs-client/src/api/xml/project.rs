@@ -7,9 +7,9 @@ use super::{
 
 #[derive(Debug, Clone, YaDeserialize)]
 pub struct Project {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub name: Option<String>,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub kind: Option<ProjectKind>,
     pub title: Option<String>,
     pub description: Option<String>,
@@ -62,21 +62,21 @@ pub struct Maintenance {
 
 #[derive(Debug, Clone, YaDeserialize)]
 pub struct Maintains {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub project: String,
 }
 
 #[derive(Debug, Clone, YaDeserialize)]
 pub struct DevelProject {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub project: String,
 }
 
 #[derive(Debug, Clone, YaDeserialize)]
 pub struct ProjectLink {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub project: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub vrevmode: VrevMode,
 }
 
@@ -101,17 +101,17 @@ pub struct SourceInfoList {
 #[derive(Debug, Clone, YaDeserialize)]
 #[allow(dead_code)]
 pub struct SourceInfo {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub package: String,
-    #[yaserde(attribute, default)]
+    #[yaserde(attribute = true, default = "u32_default")]
     pub rev: u32,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub vrev: u32,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub srcmd5: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub verifymd5: Option<String>,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub metamd5: Option<String>,
 
     pub filename: Option<String>,
@@ -128,11 +128,15 @@ pub struct SourceInfo {
     pub prereqs: Vec<String>,
 }
 
+fn u32_default() -> u32 {
+    u32::default()
+}
+
 #[derive(Debug, Clone, YaDeserialize)]
 #[allow(dead_code)]
 pub struct PackageLink {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub project: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub package: String,
 }

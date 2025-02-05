@@ -1,18 +1,18 @@
 use super::obs::{BuildArch, PackageCode, RepositoryCode};
 
 #[derive(Debug, Clone, yaserde::YaDeserialize)]
-#[yaserde(root = "resultlist")]
+#[yaserde(rename = "resultlist")]
 pub struct ResultList {
     pub result: Vec<RepositoryResult>,
 }
 
 #[derive(Debug, Clone, yaserde::YaDeserialize)]
 pub struct RepositoryResult {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub repository: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub arch: BuildArch,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub code: RepositoryCode,
     pub summary: Option<Summary>,
     pub status: Vec<PackageStatus>,
@@ -21,27 +21,27 @@ pub struct RepositoryResult {
 
 #[derive(Debug, Clone, yaserde::YaDeserialize)]
 pub struct PackageStatus {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub package: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub code: PackageCode,
     pub details: Vec<String>,
 }
 
 #[derive(Debug, Clone, yaserde::YaDeserialize)]
 pub struct PackageBinaryList {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub package: String,
     pub binary: Vec<Binary>,
 }
 
 #[derive(Debug, Clone, yaserde::YaDeserialize)]
 pub struct Binary {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub filename: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub size: u64,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub mtime: i64,
 }
 
@@ -52,8 +52,8 @@ pub struct Summary {
 
 #[derive(Debug, Clone, yaserde::YaDeserialize)]
 pub struct StatusCount {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub code: PackageCode,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub count: u32,
 }

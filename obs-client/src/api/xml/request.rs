@@ -5,13 +5,13 @@ use yaserde::{YaDeserialize, YaSerialize};
 pub struct Request {
     pub action: Vec<Action>,
     pub description: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub id: Option<u32>,
 }
 
 #[derive(Debug, YaSerialize, YaDeserialize)]
 pub struct Action {
-    #[yaserde(attribute, rename = "type")]
+    #[yaserde(attribute = true, rename = "type")]
     pub _type: String,
     pub source: Option<Target>,
     pub target: Target,
@@ -19,11 +19,11 @@ pub struct Action {
 
 #[derive(Debug, YaSerialize, YaDeserialize)]
 pub struct Target {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub project: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub package: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub rev: Option<u32>,
 }
 

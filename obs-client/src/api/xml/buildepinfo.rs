@@ -7,7 +7,7 @@ pub struct BuildDepInfo {
 
 #[derive(Debug, Clone, YaDeserialize)]
 pub struct DepPackage {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub name: String,
     pub pkgdep: Vec<String>,
 }

@@ -1,6 +1,8 @@
+use std::collections::HashSet;
 use std::{collections::HashMap, sync::Arc};
 
 use async_trait::async_trait;
+use obs_client::api::project::ReleaseTrigger;
 use obs_client::client::OBSClient;
 use tokio::sync::Mutex;
 use tracing::{debug, info, span};
@@ -101,6 +103,7 @@ where
                         project,
                     );
                     project.release().await?;
+                    obs_release_prjconf(&project, self.obs_client.clone()).await?;
                 }
                 Action::ProwJob { name, job_type } => {
                     let prow_client_mutex = self
@@ -123,4 +126,36 @@ where
         }
         Ok(())
     }
+}
+
+async fn obs_release_prjconf(
+    project: &obs_client::api::project::Project,
+    client: Arc<OBSClient>,
+) -> Result<(), obs_client::error::APIError> {
+    let src_prjconf = project.prjconf().await?;
+    let meta = project.meta().await?;
+    #[allow(clippy::mutable_key_type)]
+    let release_targets: HashSet<obs_client::api::project::Project> = meta
+        .repository
+        .iter()
+        .flat_map(|r| {
+            r.releasetarget
+                .iter()
+                .filter(|t| t.trigger == ReleaseTrigger::Manual)
+                .map(|t| obs_client::api::project::Project::from_name(client.clone(), &t.project))
+        })
+        .collect();
+    for target in release_targets {
+        if target.prjconf().await? != src_prjconf {
+            info!(
+                source = project.name(),
+                dest = target.name(),
+                "Project config out of sync, syncing"
+            );
+            target
+                .set_prjconf(&src_prjconf, &format!("Syncing from {}", project.name()))
+                .await?;
+        }
+    }
+    Ok(())
 }

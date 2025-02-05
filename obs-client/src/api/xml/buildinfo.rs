@@ -10,16 +10,16 @@ pub struct BuildInfo {
 
 #[derive(Debug, YaDeserialize)]
 pub struct BDep {
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub name: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub version: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub release: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub arch: BuildArch,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub project: String,
-    #[yaserde(attribute)]
+    #[yaserde(attribute = true)]
     pub repository: String,
 }
